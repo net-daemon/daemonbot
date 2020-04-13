@@ -92,17 +92,18 @@ https://github.com/net-daemon/docs";
     {
         if (IsBotUserMentioned(e) || IsBotChannel(e))
         {
-            var useSearch = e.Message.Content.StartsWith("<@&699326929005707355> search", true, null) ||
-                            e.Message.Content.StartsWith("<@!699223277683343361> search", true, null);
+            var query = e.Message.Content;
 
-            if (e.Message.Content.EndsWith('?') || useSearch)
+            if (IsBotUserMentioned(e))
+                query = query = e.Message.Content[23..].Trim();
+
+            var useSearch = query.StartsWith("search", true, null);
+
+            if (query.EndsWith('?') || useSearch)
             {
-                string query = "";
 
                 if (useSearch)
-                    query = e.Message.Content[30..];
-                else
-                    query = e.Message.Content[23..];
+                    query = e.Message.Content[7..];
 
                 await SendSupportResponse(e, sbot, query.Trim());
                 return true;

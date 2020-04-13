@@ -51,10 +51,10 @@ namespace bot
             if (await Bot.HandleHelp(e))
                 return;
 
-            if (await Bot.HandleCommandsPeopleMightWrite(e))
+            if (await Bot.HandleSupportQueries(e, bot))
                 return;
 
-            if (await Bot.HandleSupportQueries(e, bot))
+            if (await Bot.HandleCommandsPeopleMightWrite(e))
                 return;
 
             if (Bot.IsBotUserMentioned(e) || Bot.IsBotChannel(e))
