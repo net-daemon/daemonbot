@@ -28,32 +28,23 @@ namespace bot
 
         private static async Task OnMessageCreated(MessageCreateEventArgs e)
         {
-            System.Console.WriteLine($"Channel: {e.Message.Channel.Name} ({e.Message.Channel.Id}) ");
-            System.Console.WriteLine($"User: {e.Message.Author.Username}");
-            System.Console.WriteLine($"Content: \r\n{e.Message.Content}");
+
+            if (Bot.IsBotUser(e))
+                return; // Ignore all botusers
+
+            if (await Bot.HandleHelp(e))
+                return;
+
+            if (await Bot.HandleCommandsPeopleMightWrite(e))
+                return;
+
             if (await Bot.HandleSupportQueries(e, bot))
                 return;
 
-            if (e.Message.MentionedRoles.Select(n => n.Id == 699226092426231858).Count() > 0 ||
-                e.Message.MentionedUsers.Select(n => n.Id == 699223277683343361).Count() > 0)
+            if (Bot.IsBotUserMentioned(e) || Bot.IsBotChannel(e))
             {
-                await e.Message.RespondAsync("I am sorry I could not understand your command, say **help** for commands");
+                await e.Message.RespondAsync("I am sorry I could not understand your command, type command **help** for valid commands");
             }
-            // if (string.Equals(e.Message.Content, "hello", StringComparison.OrdinalIgnoreCase))
-            // {
-            //     await e.Message.RespondAsync(e.Message.Author.Username);
-            // }
         }
-        // public static void Main(string[] args)
-        // {
-        //     CreateHostBuilder(args).Build().Run();
-        // }
-
-        // public static IHostBuilder CreateHostBuilder(string[] args) =>
-        //     Host.CreateDefaultBuilder(args)
-        //         .ConfigureWebHostDefaults(webBuilder =>
-        //         {
-        //             webBuilder.UseStartup<Startup>();
-        //         });
     }
 }
