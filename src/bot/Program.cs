@@ -45,6 +45,9 @@ namespace bot
             if (Bot.IsBotUser(e))
                 return; // Ignore all botusers
 
+            if (Bot.IsBotUserMentioned(e) == false && Bot.IsBotChannel(e) == false)
+                return;
+
             if (await Bot.HandleHelp(e))
                 return;
 

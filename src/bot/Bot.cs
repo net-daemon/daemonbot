@@ -20,8 +20,8 @@ https://github.com/net-daemon/docs";
     }
     public static bool IsBotUserMentioned(MessageCreateEventArgs e)
     {
-        if (e.Message.MentionedRoles.Select(n => n.Id == 699326929005707355).Count() > 0 ||
-            e.Message.MentionedUsers.Select(n => n.Id == 699223277683343361).Count() > 0)
+        if (e.Message.MentionedRoles.Where(n => n.Id == 699326929005707355).Count() > 0 ||
+            e.Message.MentionedUsers.Where(n => n.Id == 699223277683343361).Count() > 0)
         {
             return true;
         }
