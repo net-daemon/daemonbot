@@ -1,0 +1,36 @@
+{
+  "name": "Daemon bot",
+  // "dockerFile": "Dockerfile",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "daemonbot",
+  // Use 'settings' to set *default* container specific settings.json values on container create.
+  // You can edit these settings after create using File > Preferences > Settings > Remote.
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "remoteEnv": {
+    "DISCORD_TOKEN": "${localEnv:DISCORD_TOKEN}",
+    "ALGOLIA_APPID": "${localEnv:ALGOLIA_APPID}",
+    "ALGOLIA_APIKEY": "${localEnv:ALGOLIA_APIKEY}"
+  },
+  "postCreateCommand": "git clone https://github.com/net-daemon/daemonbot.git /root/src/",
+  // Uncomment the next line if you want to publish any ports.
+  //"appPort": [5001],
+  // Uncomment the next line to run commands after the container is created.
+  // "postCreateCommand": "mkdir /root/src",
+  // Uncomment the next line to use a non-root user. On Linux, this will prevent
+  // new files getting created as root, but you may need to update the USER_UID
+  // and USER_GID in .devcontainer/Dockerfile to match your user if not 1000.
+  // "runArgs": [ "-u", "vscode" ],
+  // Add the IDs of extensions you want installed when the container is created in the array below.
+  "workspaceFolder": "/root/src/",
+  "extensions": [
+    "ms-dotnettools.csharp",
+    "aaron-bond.better-comments",
+    "k--kato.docomment",
+    "formulahendry.dotnet-test-explorer",
+    "knisterpeter.vscode-github",
+    "ryanluker.vscode-coverage-gutters",
+    "eamodio.gitlens"
+  ]
+}
