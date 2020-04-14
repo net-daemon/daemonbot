@@ -4,6 +4,8 @@
 # Daemonbot Service
 # Starts Daemonbot
 # ==============================================================================
+echo -e "\033[32mStarting Daemonbot...\033[0m" >&2
+
 cd /bot || echo -e "\033[31mCould not change directory to bot\033[0m" >&2
 
 echo -e "\033[32mStarting Daemonbot...\033[0m" >&2

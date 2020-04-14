@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /tmp
+cd /tmp/bot
 
 echo -e "\033[31mBuilding DaemonBot for platform $TARGETPLATFORM\033[0m" >&2
 

@@ -1,0 +1,9 @@
+version: "2.0"
+services:
+  daemonbot:
+    image: netdaemon/daemonbot:latest
+    restart: always
+    environment:
+      ALGOLIA_APIKEY: key
+      ALGOLIA_APPID: appid
+      DISCORD_TOKEN: token
