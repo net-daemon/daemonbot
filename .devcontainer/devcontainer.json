@@ -9,6 +9,7 @@
     "terminal.integrated.shell.linux": "/bin/bash"
   },
   "remoteEnv": {
+    "DISCORD_BOTCHANNEL": "${localEnv:DISCORD_BOTCHANNEL}",
     "DISCORD_TOKEN": "${localEnv:DISCORD_TOKEN}",
     "ALGOLIA_APPID": "${localEnv:ALGOLIA_APPID}",
     "ALGOLIA_APIKEY": "${localEnv:ALGOLIA_APIKEY}"
