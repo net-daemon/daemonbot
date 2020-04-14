@@ -6,61 +6,67 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using Serilog.Events;
+using Serilog.Sinks.SystemConsole.Themes;
+using Serilog.Core;
+
 namespace bot
 {
 
     public class Program
     {
-        static SearchBot bot = new SearchBot();
 
-        public static async Task Main(string[] args)
+
+        // Logging switch
+        private static LoggingLevelSwitch _levelSwitch = new LoggingLevelSwitch();
+
+        // public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
-            var discordClient = new DiscordClient(new DiscordConfiguration
+
+            try
             {
-                Token = Environment.GetEnvironmentVariable("DISCORD_TOKEN"),
-                TokenType = TokenType.Bot
-            });
+                // Setup serilog
+                Log.Logger = new LoggerConfiguration()
+                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                    .Enrich.FromLogContext()
+                    .MinimumLevel.ControlledBy(_levelSwitch)
+                    .WriteTo.Console(theme: AnsiConsoleTheme.Code)
+                    .CreateLogger();
 
-            discordClient.MessageCreated += OnMessageCreated;
-            await discordClient.ConnectAsync();
+                var envLogLevel = Environment.GetEnvironmentVariable("BOT_LOG_LEVEL");
+                _levelSwitch.MinimumLevel = envLogLevel switch
+                {
+                    "info" => LogEventLevel.Information,
+                    "debug" => LogEventLevel.Debug,
+                    "error" => LogEventLevel.Error,
+                    "warning" => LogEventLevel.Warning,
+                    "trace" => LogEventLevel.Verbose,
+                    _ => LogEventLevel.Information
+                };
 
-            CreateHostBuilder(args).Build().Run();
-            await Task.Delay(-1);
+                Log.Information("Starting BotServiceHost...");
+
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch (Exception e)
+            {
+                Log.Fatal(e, "Failed to start BotServiceHost...");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-        .ConfigureWebHostDefaults(webBuilder =>
-        {
-            webBuilder.UseStartup<Startup>();
-        });
-
-        private static async Task OnMessageCreated(MessageCreateEventArgs e)
-        {
-
-            if (Bot.IsBotUser(e))
-                return; // Ignore all botusers
-
-            if (Bot.IsBotUserMentioned(e) == false && Bot.IsBotChannel(e) == false)
-                return;
-
-            if (await Bot.HandleHelp(e))
-                return;
-
-            if (await Bot.HandleSupportQueries(e, bot))
-                return;
-
-            if (await Bot.HandleCommandsPeopleMightWrite(e))
-                return;
-
-            if (Bot.IsBotUserMentioned(e) || Bot.IsBotChannel(e))
-            {
-                await e.Message.RespondAsync("I am sorry I could not understand your command, type command **help** for valid commands");
-            }
-        }
+                .UseSerilog()
+                .ConfigureServices(services => { services.AddHostedService<BotService>(); });
     }
 }

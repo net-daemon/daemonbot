@@ -91,7 +91,7 @@ https://github.com/net-daemon/docs";
         }
         return false;
     }
-    public static async Task<bool> HandleSupportQueries(MessageCreateEventArgs e, SearchBot sbot)
+    public static async Task<bool> HandleSupportQueries(MessageCreateEventArgs e, AlgoliaSearchClient sbot)
     {
         if (IsBotUserMentioned(e) || IsBotChannel(e))
         {
@@ -116,7 +116,7 @@ https://github.com/net-daemon/docs";
 
         return false;
 
-        async Task SendSupportResponse(MessageCreateEventArgs e, SearchBot sbot, string query)
+        async Task SendSupportResponse(MessageCreateEventArgs e, AlgoliaSearchClient sbot, string query)
         {
             try
             {

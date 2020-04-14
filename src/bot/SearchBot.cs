@@ -4,11 +4,11 @@ using System.Linq;
 using System;
 using System.Threading.Tasks;
 
-public class SearchBot
+public class AlgoliaSearchClient
 {
     SearchClient client;
     SearchIndex index;
-    public SearchBot()
+    public AlgoliaSearchClient()
     {
         var appId = Environment.GetEnvironmentVariable("ALGOLIA_APPID");
         var apiKey = Environment.GetEnvironmentVariable("ALGOLIA_APIKEY");
