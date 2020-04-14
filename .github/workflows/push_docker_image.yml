@@ -1,0 +1,29 @@
+#### Publish tags to docker hub
+name: Deploy dev builds to Docker Hub
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    name: Deploy to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Login to docker hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v1
+        with:
+          version: latest
+      - name: Run Buildx
+        run: |
+          docker buildx build \
+            --platform linux/arm,linux/arm64,linux/amd64 \
+            --output "type=image,push=true" \
+            --no-cache \
+            --file ./Dockerfile . \
+            --compress \
+            --tag netdaemon/daemonbot:latest
