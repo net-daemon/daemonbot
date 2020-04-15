@@ -1,4 +1,6 @@
 using System;
+using System.Globalization;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -10,24 +12,61 @@ public class BotService : BackgroundService
 {
     private readonly ILogger<BotService> _logger;
     private readonly ILoggerFactory _loggerFactory;
-    static AlgoliaSearchClient _bot = new AlgoliaSearchClient();
-    private readonly DiscordClient _client;
-    public BotService(ILoggerFactory loggerFactory)
+    private readonly IBotRunner _botRunner;
+    private readonly DiscordClient _discordClient;
+    private readonly ulong? _botChannel;
+
+    /// <summary>
+    ///     Hosted service implementing the lifetime of the bot
+    /// </summary>
+    /// <param name="loggerFactory">Logfactory used</param>
+    /// <param name="runner">The botrunner used</param>
+    public BotService(
+        ILoggerFactory loggerFactory,
+        IBotRunner runner
+        )
     {
         _logger = loggerFactory.CreateLogger<BotService>();
         _loggerFactory = loggerFactory;
+        _botRunner = runner;
 
         _logger.LogInformation("Initialize BotService..");
-        _client = new DiscordClient(new DiscordConfiguration
+
+        // Todo: Decouple the Discord service to able to use in other chats
+        _discordClient = new DiscordClient(new DiscordConfiguration
         {
             Token = Environment.GetEnvironmentVariable("DISCORD_TOKEN"),
             TokenType = TokenType.Bot
         });
 
-        _client.MessageCreated += OnMessageCreated;
+        var botChannel = Environment.GetEnvironmentVariable("DISCORD_BOTCHANNEL");
+
+        if (ulong.TryParse(botChannel, out var channelId))
+            _botChannel = channelId;
+
+        _discordClient.MessageCreated += OnMessageCreated;
 
     }
 
+    /// <summary>
+    ///     Returns true if the message is to the bot
+    /// </summary>
+    private bool IsThisMessageForTheBot(MessageCreateEventArgs e)
+    {
+        // Check if this is the botchannel
+        if (_botChannel is object && _botChannel == e.Message.Channel.Id)
+            return true;
+
+        // Check if the bot is mentioned
+        if (e.Message.MentionedUsers.Where(n => n.IsBot == true).Count() > 0)
+            return true;
+
+        return false;
+    }
+
+    /// <summary>
+    ///     Called each new message from Discord
+    /// </summary>
     private async Task OnMessageCreated(MessageCreateEventArgs e)
     {
         if (_logger.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Trace))
@@ -35,26 +74,14 @@ public class BotService : BackgroundService
             _logger.LogTrace(@"Message from {author}");
         }
 
+        if (e.Message.Author.IsBot || IsThisMessageForTheBot(e) == false)
+            return; // Ignore all botusers or messages not for the bot
 
-        if (Bot.IsBotUser(e))
-            return; // Ignore all botusers
+        var parser = new BotParser(e.Message.Content, e.Message.MentionedUsers.Where(n => n.IsBot == true).Count() > 0);
 
-        if (Bot.IsBotUserMentioned(e) == false && Bot.IsBotChannel(e) == false)
-            return;
+        var responseMessage = await _botRunner.HandleMessage(parser);
 
-        if (await Bot.HandleHelp(e))
-            return;
-
-        if (await Bot.HandleSupportQueries(e, _bot))
-            return;
-
-        if (await Bot.HandleCommandsPeopleMightWrite(e))
-            return;
-
-        if (Bot.IsBotUserMentioned(e) || Bot.IsBotChannel(e))
-        {
-            await e.Message.RespondAsync("I am sorry I could not understand your command, type command **help** for valid commands");
-        }
+        await e.Message.RespondAsync(responseMessage);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -62,7 +89,7 @@ public class BotService : BackgroundService
         try
         {
             _logger.LogInformation("Connecting to Discord..");
-            await _client.ConnectAsync();
+            await _discordClient.ConnectAsync();
 
             _logger.LogInformation("Bot is running and receiving messages!");
 

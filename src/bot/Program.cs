@@ -20,8 +20,6 @@ namespace bot
 
     public class Program
     {
-
-
         // Logging switch
         private static LoggingLevelSwitch _levelSwitch = new LoggingLevelSwitch();
 
@@ -67,6 +65,26 @@ namespace bot
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .UseSerilog()
-                .ConfigureServices(services => { services.AddHostedService<BotService>(); });
+                .ConfigureServices(services =>
+                {
+                    services.AddHostedService<BotService>();
+
+
+                    services.AddTransient<AlgoliaPlugin>(n =>
+                        new AlgoliaPlugin(
+                            Environment.GetEnvironmentVariable("ALGOLIA_APPID"),
+                            Environment.GetEnvironmentVariable("ALGOLIA_APIKEY"),
+                            "netdaemon",
+                            n.GetRequiredService<ILoggerFactory>(), 10));
+
+                    services.AddTransient<StaticCommandsPlugin>(n =>
+                        new StaticCommandsPlugin(20));
+
+
+                    services.AddSingleton<IBotRunner, BotRunner>();
+
+                    // Todo: Find out home assistant app_id to add support for Hass search later
+
+                });
     }
 }
