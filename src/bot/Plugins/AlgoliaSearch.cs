@@ -112,8 +112,26 @@ https://github.com/net-daemon/docs";
 
             foreach (var hit in result.Hits)
             {
-                if (hit.anchor is object && hit.url is object)
-                    returnList.Add((hit.anchor, hit.url));
+                if (hit.hierarchy is object && hit.url is object)
+                {
+                    var caption = hit.anchor;
+                    for (int i = 5; i >= 0; i--)
+                    {
+                        var lvl = $"lvl{i}";
+                        if (hit.hierarchy.ContainsKey(lvl) && hit.hierarchy[lvl] is object)
+                        {
+                            caption = hit.hierarchy[lvl];
+                            break;
+                        }
+                    }
+
+                    if (hit.url.EndsWith("#__docusaurus"))
+                    {
+                        hit.url = hit.url[..^14];
+                    }
+
+                    returnList.Add((caption!, hit.url));
+                }
             }
         }
         catch (System.Exception e)
@@ -131,4 +149,5 @@ public class Hit
 {
     public string? anchor { get; set; }
     public string? url { get; set; }
+    public Dictionary<string, string>? hierarchy { get; set; }
 }
