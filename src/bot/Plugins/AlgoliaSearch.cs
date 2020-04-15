@@ -114,6 +114,8 @@ https://github.com/net-daemon/docs";
             {
                 if (hit.hierarchy is object && hit.url is object)
                 {
+                    bool isIndexedWrong = false;
+
                     var caption = hit.anchor;
                     for (int i = 5; i >= 0; i--)
                     {
@@ -121,6 +123,10 @@ https://github.com/net-daemon/docs";
                         if (hit.hierarchy.ContainsKey(lvl) && hit.hierarchy[lvl] is object)
                         {
                             caption = hit.hierarchy[lvl];
+
+                            if (caption.StartsWith("«") || caption.EndsWith("»"))
+                                isIndexedWrong = true; // It has indexed the arrow texts
+
                             break;
                         }
                     }
@@ -130,7 +136,9 @@ https://github.com/net-daemon/docs";
                         hit.url = hit.url[..^14];
                     }
 
-                    returnList.Add((caption!, hit.url));
+                    // Compensate for fauly indexed pages
+                    if (!isIndexedWrong)
+                        returnList.Add((caption!, hit.url));
                 }
             }
         }
