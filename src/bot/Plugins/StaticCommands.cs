@@ -42,6 +42,6 @@ public class StaticCommandsPlugin : IBotPlugin
         ["helto"] = "Is the weirdo that actually does this for free :rofl: :rofl:, use help for available commands.",
         ["ludeeus"] = "Hangaround dev dunno what he reallys does for a living :grimacing:, use help for available commands.",
         ["netdaemon"] = "Yes you have come to the right server not try a better command :kissing_closed_eyes:, use help for available commands.",
-        ["docs"] = ":partying_face: https://github.com/net-daemon/docs"
+        ["docs"] = ":partying_face: <https://github.com/net-daemon/docs>"
     };
 }
