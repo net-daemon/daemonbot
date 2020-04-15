@@ -90,7 +90,7 @@ https://github.com/net-daemon/docs";
             foreach (var (topic, url) in searchResult.Take(3))
             {
                 builder.AppendLine($"**{topic}**");
-                builder.AppendLine($"{url}");
+                builder.AppendLine($"<{url}>");
             }
             return builder.ToString();
         }
