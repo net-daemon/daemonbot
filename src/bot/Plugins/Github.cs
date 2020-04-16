@@ -98,11 +98,11 @@ public class GithubPlugin : IBotPlugin
         if (bugs.Count == 0)
             return new BotResult() { Title = $"Yay! :smiley_cat:", Text = "No open filed bugs! Please report if you find an issue at <https://github.com/net-daemon/netdaemon/issues/new/choose>" };
 
-        var result = new BotResult() { Title = $"What?? There is bugs?? :bug:", Text = "Following last (<=5) open issues labled bug found!" };
+        var result = new BotResult() { Title = $"What?? There is bugs?? :bug:", Text = "Following last 5 open issues labeled bug found!" };
 
         foreach (var bug in bugs.Take(5))
         {
-            result.Fields.Add((bug.Title, $"<{bug.Url}>"));
+            result.Fields.Add((bug.Title, $"<{bug.HtmlUrl}>"));
         }
 
         // result.Fields.Add(("Author", release.Author.Login));
