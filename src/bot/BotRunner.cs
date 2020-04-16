@@ -68,14 +68,14 @@ public class BotRunner : IBotRunner
         var builder = new StringBuilder();
 
         // builder.AppendLine("**Commands:**");
-        builder.AppendLine(">>> - help, displays this message :smile:");
+        builder.AppendLine(">>> - **help**, displays this message :smile:");
 
         foreach (var plugin in _plugins)
         {
             var pluginCommands = plugin.GetCommandsAndDecriptions();
             if (pluginCommands is object)
                 foreach (var (command, description) in pluginCommands)
-                    builder.AppendLine($" - {command}, {description}");
+                    builder.AppendLine($" - **{command}**, {description}");
         }
         result.Fields.Add(("Commands", builder.ToString()));
 
