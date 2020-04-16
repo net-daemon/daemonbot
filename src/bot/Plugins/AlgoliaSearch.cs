@@ -12,10 +12,11 @@ using Microsoft.Extensions.Logging;
 /// </summary>
 public class AlgoliaPlugin : IBotPlugin
 {
-    static string _defaultEmptyResultMessage = @":poop:  No results found!
-Maybe you want to contribute that to the docs?
-https://github.com/net-daemon/docs";
-
+    static BotResult _defaultEmptyResultMessage = new BotResult
+    {
+        Title = ":poop: No results found!",
+        Text = "Maybe you want to contribute that to the docs?\n<https://github.com/net-daemon/docs>"
+    };
 
     private int _orderOfProcessingMessages = 0;
     private ILogger _logger;
@@ -49,14 +50,18 @@ https://github.com/net-daemon/docs";
 
     public int Order => _orderOfProcessingMessages;
 
-    public async Task<string?> HandleMessage(IMessage message)
+    public async Task<BotResult?> HandleMessage(IMessage message)
     {
         if (message.Command == "search")
         {
             if (message.CommandArgs is object)
                 return await QueryMessage(message.CommandArgs);
             else
-                return ":poop:Hey you! You want me to guess what you wanted to search for?? Please provide me more information!";
+                return new BotResult
+                {
+                    Title = ":poop: Meeeh!",
+                    Text = "Hey you! You want me to guess what you wanted to search for?? Please provide me more information!"
+                };
         }
         else if (message.Query is object)
         {
@@ -73,10 +78,11 @@ https://github.com/net-daemon/docs";
         };
     }
 
-    private async Task<string> QueryMessage(string query)
+    private async Task<BotResult> QueryMessage(string query)
     {
         try
         {
+
             var searchResult = await Search(query);
 
             var builder = new StringBuilder();
@@ -86,13 +92,19 @@ https://github.com/net-daemon/docs";
                 return _defaultEmptyResultMessage;
             }
 
-            builder.AppendLine($"I found {searchResult.Take(3).Count()} results for you :partying_face:");
+            var botResult = new BotResult
+            {
+                Title = $"I found {searchResult.Take(3).Count()} results for you :partying_face:",
+            };
+
+            builder.AppendLine();
             foreach (var (topic, url) in searchResult.Take(3))
             {
-                builder.AppendLine($"**{topic}**");
-                builder.AppendLine($"<{url}>");
+                botResult.Fields.Add((topic, url));
+                // builder.AppendLine($"**{topic}**");
+                // builder.AppendLine($"<{url}>");
             }
-            return builder.ToString();
+            return botResult;
         }
         catch (System.Exception)
         {

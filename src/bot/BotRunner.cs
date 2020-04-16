@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 public interface IBotRunner
 {
-    Task<string> HandleMessage(IMessage message);
+    Task<BotResult> HandleMessage(IMessage message);
 }
 public class BotRunner : IBotRunner
 {
@@ -40,7 +40,7 @@ public class BotRunner : IBotRunner
         return pluginList.OrderBy(n => n.Order);
     }
 
-    public async Task<string> HandleMessage(IMessage message)
+    public async Task<BotResult> HandleMessage(IMessage message)
     {
         if (message.Command == "help" && message.CommandArgs is null)
             return HelpMessage();
@@ -56,12 +56,19 @@ public class BotRunner : IBotRunner
         return DefaultMessage();
     }
 
-    public string HelpMessage()
+    public BotResult HelpMessage()
     {
+        var result = new BotResult()
+        {
+            Title = "Help - Supported commands",
+
+        };
+        result.Fields.Add(("Usage", "Type command to bot user or in the bot channel"));
+
         var builder = new StringBuilder();
-        builder.AppendLine("**Usage:** Type command to bot user or in the bot channel");
-        builder.AppendLine("**Commands:**");
-        builder.AppendLine(" - help, displays this message :smile:");
+
+        // builder.AppendLine("**Commands:**");
+        builder.AppendLine(">>> - help, displays this message :smile:");
 
         foreach (var plugin in _plugins)
         {
@@ -70,11 +77,16 @@ public class BotRunner : IBotRunner
                 foreach (var (command, description) in pluginCommands)
                     builder.AppendLine($" - {command}, {description}");
         }
+        result.Fields.Add(("Commands", builder.ToString()));
 
-        return builder.ToString();
+        return result;
     }
-    public static string DefaultMessage()
+    public static BotResult DefaultMessage()
     {
-        return ":poop:I am sorry I could not understand your command, type command **help** for valid commands";
+        return new BotResult()
+        {
+            Title = ":poop: Whut??",
+            Text = "I am sorry I could not understand your command, type command **help** for valid commands"
+        };
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -45,7 +46,6 @@ public class BotService : BackgroundService
             _botChannel = channelId;
 
         _discordClient.MessageCreated += OnMessageCreated;
-
     }
 
     /// <summary>
@@ -81,7 +81,17 @@ public class BotService : BackgroundService
 
         var responseMessage = await _botRunner.HandleMessage(parser);
 
-        await e.Message.RespondAsync(responseMessage);
+        var embed = new DiscordEmbedBuilder
+        {
+            Color = new DiscordColor("#550099"),
+            Title = responseMessage.Title,
+            Description = responseMessage.Text
+        };
+        foreach (var (field, text) in responseMessage.Fields)
+        {
+            embed.AddField(field, text, false);
+        }
+        await e.Message.RespondAsync(embed: embed.Build());
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

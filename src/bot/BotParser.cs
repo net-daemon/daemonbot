@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public interface IBotPlugin
 {
-    Task<string?> HandleMessage(IMessage message);
+    Task<BotResult?> HandleMessage(IMessage message);
     int Order { get; }
 
     IEnumerable<(string, string?)>? GetCommandsAndDecriptions();
