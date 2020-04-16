@@ -80,6 +80,12 @@ namespace bot
                     services.AddTransient<StaticCommandsPlugin>(n =>
                         new StaticCommandsPlugin(20));
 
+                    services.AddTransient<GithubPlugin>(n =>
+                                            new GithubPlugin(
+                                                n.GetRequiredService<ILoggerFactory>(),
+                                                30,
+                                                Environment.GetEnvironmentVariable("GITHUB_TOKEN")
+                                                ));
 
                     services.AddSingleton<IBotRunner, BotRunner>();
 
