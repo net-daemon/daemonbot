@@ -12,7 +12,8 @@
     "DISCORD_BOTCHANNEL": "${localEnv:DISCORD_BOTCHANNEL}",
     "DISCORD_TOKEN": "${localEnv:DISCORD_TOKEN}",
     "ALGOLIA_APPID": "${localEnv:ALGOLIA_APPID}",
-    "ALGOLIA_APIKEY": "${localEnv:ALGOLIA_APIKEY}"
+    "ALGOLIA_APIKEY": "${localEnv:ALGOLIA_APIKEY}",
+    "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}"
   },
   "postCreateCommand": "git clone https://github.com/net-daemon/daemonbot.git /root/src/",
   // Uncomment the next line if you want to publish any ports.
