@@ -60,7 +60,7 @@ public class BotRunner : IBotRunner
     {
         var result = new BotResult()
         {
-            Title = "Help - Supported commands",
+            Title = "Help",
 
         };
         result.Fields.Add(("Usage", "Type command to bot user or in the bot channel"));
@@ -86,7 +86,7 @@ public class BotRunner : IBotRunner
         return new BotResult()
         {
             Title = ":poop: Whut??",
-            Text = "I am sorry I could not understand your command, type command **help** for valid commands"
+            Text = "I am sorry I could not understand your command, type **help** for valid commands"
         };
     }
 }

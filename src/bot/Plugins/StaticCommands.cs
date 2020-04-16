@@ -18,7 +18,7 @@ public class StaticCommandsPlugin : IBotPlugin
 
     public Task<BotResult?> HandleMessage(IMessage message)
     {
-        if (message.Command is object)
+        if (message.Command is object && _commandResponse.ContainsKey(message.Command))
         {
             var (title, text) = _commandResponse[message.Command];
 
@@ -43,8 +43,6 @@ public class StaticCommandsPlugin : IBotPlugin
     private static Dictionary<string, (string title, string text)> _commandResponse = new Dictionary<string, (string, string)>
     {
         ["test"] = ("Test??", "What are you trying to test? Dont understand :zany_face: :zany_face:, use help for available commands."),
-        ["self destruct"] = (":bomb: :bomb: Ohhhhh :bomb: :bomb: ", "Ok selfdestructing in 5..4..3..2..1.. naaah, please use help for available commands."),
-        ["meaning of life"] = (":people_with_bunny_ears_partying: It is a number.. :people_with_bunny_ears_partying: ", "42 :partying_face:, please use help for available commands."),
         ["die"] = (":face_with_symbols_over_mouth: Dieee?? :face_with_symbols_over_mouth:", "Why? why? whyyyyy doo you hate meeee :sob::sob::sob:, please use help for available commands."),
         ["helto"] = (":smiling_imp: helto :smiling_imp:", "Is the weirdo that actually does this for free :rofl: :rofl:, use help for available commands."),
         ["ludeeus"] = (":clap: Ludeeus :clap:", "Hangaround dev dunno what he reallys does for a living :grimacing:, use help for available commands."),
