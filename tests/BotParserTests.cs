@@ -32,7 +32,7 @@ namespace src
             string? expectedQuery)
         {
             // ARRANGE & ACT
-            var parser = new BotParser(expression, false, new string[] { "role" }, false);
+            var parser = new BotParser(expression, false, new string[] { "role" }, false, "user");
 
             Assert.Equal(expectedCommand, parser.Command);
             Assert.Equal(expectedArgs, parser.CommandArgs);

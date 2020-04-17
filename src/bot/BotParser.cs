@@ -14,6 +14,11 @@ public interface IBotPlugin
 public interface IMessage
 {
     /// <summary>
+    ///     The name of the User sending message
+    /// </summary>
+    string User { get; }
+
+    /// <summary>
     ///    Role of Author
     /// </summary>
     IEnumerable<string>? Roles { get; }
@@ -58,6 +63,7 @@ public class BotParser : IMessage
     /// <inheritdoc>
     public IEnumerable<string>? Roles { get; private set; }
     public bool IsOwner { get; private set; }
+    public string User { get; }
     public string? Query { get; private set; }
 
     public bool BotMentioned { get; private set; } = false;
@@ -73,12 +79,13 @@ public class BotParser : IMessage
     static Regex _exQuery = new Regex(@"(<@!\d+>)*\s*(?'query'.+)\?");
     #endregion
 
-    public BotParser(string message, bool botMentioned, IEnumerable<string>? roles, bool isOwner)
+    public BotParser(string message, bool botMentioned, IEnumerable<string>? roles, bool isOwner, string user)
     {
         BotMentioned = botMentioned;
         OriginalMessage = message;
         Roles = roles;
         IsOwner = isOwner;
+        User = user;
 
         if (message.EndsWith('?'))
         {

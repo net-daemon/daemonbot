@@ -86,7 +86,8 @@ public class BotService : BackgroundService
             e.Message.Content,
             e.Message.MentionedUsers.Where(n => n.IsBot == true).Count() > 0,
             roles,
-            member.IsOwner
+            member.IsOwner,
+            e.Author.Username
             );
 
         var responseMessage = await _botRunner.HandleMessage(parser);

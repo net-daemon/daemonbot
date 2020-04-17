@@ -110,9 +110,9 @@ public class GithubPlugin : IBotPlugin
                 case "docs":
                     return await AddDocsIssue(title);
                 case "feature":
-                    return await AddDaemonIssue("feature", title);
+                    return await AddDaemonIssue("feature", title, message.User);
                 case "bug":
-                    return await AddDaemonIssue("bug", title);
+                    return await AddDaemonIssue("bug", title, message.User);
                 default:
                     return UnKnownIssueCommand();
             };
@@ -125,7 +125,7 @@ public class GithubPlugin : IBotPlugin
         };
     }
 
-    private async Task<BotResult?> AddDaemonIssue(string type, string title)
+    private async Task<BotResult?> AddDaemonIssue(string type, string title, string user)
     {
         var createIssue = new NewIssue(title);
 
@@ -143,8 +143,8 @@ public class GithubPlugin : IBotPlugin
 
         var body = type switch
         {
-            "feature" => featureTemplate,
-            "bug" => issueTemplate,
+            "feature" => $"{featureTemplate}\n> Added by Discord user {user}",
+            "bug" => $"{issueTemplate}\n> Added by Discord user {user}",
             _ => null
         };
 
