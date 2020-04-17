@@ -46,6 +46,7 @@ public class BotService : BackgroundService
             _botChannel = channelId;
 
         _discordClient.MessageCreated += OnMessageCreated;
+
     }
 
     /// <summary>
@@ -77,7 +78,16 @@ public class BotService : BackgroundService
         if (e.Message.Author.IsBot || IsThisMessageForTheBot(e) == false)
             return; // Ignore all botusers or messages not for the bot
 
-        var parser = new BotParser(e.Message.Content, e.Message.MentionedUsers.Where(n => n.IsBot == true).Count() > 0);
+        // Get the member info and roles
+        var member = e.Guild.Members.Where(n => n.Id == e.Message.Author.Id).FirstOrDefault();
+        var roles = member.Roles.Select(n => n.Name).ToList();
+
+        var parser = new BotParser(
+            e.Message.Content,
+            e.Message.MentionedUsers.Where(n => n.IsBot == true).Count() > 0,
+            roles,
+            member.IsOwner
+            );
 
         var responseMessage = await _botRunner.HandleMessage(parser);
 

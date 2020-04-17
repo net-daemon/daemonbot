@@ -14,6 +14,16 @@ public interface IBotPlugin
 public interface IMessage
 {
     /// <summary>
+    ///    Role of Author
+    /// </summary>
+    IEnumerable<string>? Roles { get; }
+
+    /// <summary>
+    ///    If author is owner
+    /// </summary>
+    bool IsOwner { get; }
+
+    /// <summary>
     ///     If parsed as query to the docs this property will be non-null
     ///     (ends with ´?´)
     /// </summary>
@@ -46,6 +56,8 @@ public interface IMessage
 public class BotParser : IMessage
 {
     /// <inheritdoc>
+    public IEnumerable<string>? Roles { get; private set; }
+    public bool IsOwner { get; private set; }
     public string? Query { get; private set; }
 
     public bool BotMentioned { get; private set; } = false;
@@ -61,10 +73,12 @@ public class BotParser : IMessage
     static Regex _exQuery = new Regex(@"(<@!\d+>)*\s*(?'query'.+)\?");
     #endregion
 
-    public BotParser(string message, bool botMentioned)
+    public BotParser(string message, bool botMentioned, IEnumerable<string>? roles, bool isOwner)
     {
         BotMentioned = botMentioned;
         OriginalMessage = message;
+        Roles = roles;
+        IsOwner = isOwner;
 
         if (message.EndsWith('?'))
         {
