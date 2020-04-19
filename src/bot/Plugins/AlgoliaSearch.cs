@@ -22,6 +22,10 @@ public class AlgoliaPlugin : IBotPlugin
     private ILogger _logger;
     SearchClient _algoliaSearchClient;
     SearchIndex _algoliaIndex;
+    private readonly string _searchCommand;
+    private readonly bool _isDefaultSearch;
+    private readonly string _searchCommandHelp;
+    private readonly string _searchDescriptionHelp;
 
     /// <summary>
     ///     Constructor
@@ -36,11 +40,20 @@ public class AlgoliaPlugin : IBotPlugin
         string? apiKey,
         string? indexName,
         ILoggerFactory loggerFactory,
+        string searchCommand = "search",
+        string searchCommandHelp = "search or end with ?",
+        string searchDescriptionHelp = "Search the docs and return top 3 results",
         int order = 0)
     {
         _ = appId ?? throw new ArgumentNullException(nameof(appId));
         _ = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
         _ = indexName ?? throw new ArgumentNullException(nameof(apiKey));
+
+        _searchCommand = searchCommand;
+        _isDefaultSearch = searchCommand == "search" ? true : false;
+
+        _searchCommandHelp = searchCommandHelp;
+        _searchDescriptionHelp = searchDescriptionHelp;
 
         _logger = loggerFactory.CreateLogger<AlgoliaPlugin>();
         _algoliaSearchClient = new SearchClient(appId, apiKey);
@@ -52,7 +65,7 @@ public class AlgoliaPlugin : IBotPlugin
 
     public async Task<BotResult?> HandleMessage(IMessage message)
     {
-        if (message.Command == "search")
+        if (message.Command == _searchCommand)
         {
             if (message.CommandArgs is object)
                 return await QueryMessage(message.CommandArgs);
@@ -63,7 +76,7 @@ public class AlgoliaPlugin : IBotPlugin
                     Text = "Hey you! You want me to guess what you wanted to search for?? Please provide me more information!"
                 };
         }
-        else if (message.Query is object)
+        else if (message.Query is object && _isDefaultSearch)
         {
             return await QueryMessage(message.Query);
         }
@@ -74,7 +87,7 @@ public class AlgoliaPlugin : IBotPlugin
     {
         return new List<(string, string?)>
         {
-            ("search or any word/s end with ?", "suggests docs from NetDaemon docs")
+            (_searchCommandHelp, _searchDescriptionHelp)
         };
     }
 
@@ -101,8 +114,6 @@ public class AlgoliaPlugin : IBotPlugin
             foreach (var (topic, url) in searchResult.Take(3))
             {
                 botResult.Fields.Add((topic, url));
-                // builder.AppendLine($"**{topic}**");
-                // builder.AppendLine($"<{url}>");
             }
             return botResult;
         }

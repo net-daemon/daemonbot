@@ -75,7 +75,19 @@ namespace bot
                             Environment.GetEnvironmentVariable("ALGOLIA_APPID"),
                             Environment.GetEnvironmentVariable("ALGOLIA_APIKEY"),
                             "netdaemon",
-                            n.GetRequiredService<ILoggerFactory>(), 10));
+                            n.GetRequiredService<ILoggerFactory>(),
+                             order: 10));
+
+                    services.AddTransient<HassSearchPlugin>(n =>
+                        new HassSearchPlugin(
+                            Environment.GetEnvironmentVariable("ALGOLIA_APPID"),
+                            "ae96d94b201c5444c8a443093edf3efb",
+                            "home-assistant",
+                            n.GetRequiredService<ILoggerFactory>(),
+                            searchCommand: "hass",
+                            searchCommandHelp: "hass",
+                            searchDescriptionHelp: "Type hass and search word/s to get search results from Home Assistant docs.",
+                            order: 10));
 
                     services.AddTransient<StaticCommandsPlugin>(n =>
                         new StaticCommandsPlugin(20));
