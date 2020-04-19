@@ -96,7 +96,7 @@ public class BotService : BackgroundService
         {
             Color = new DiscordColor("#550099"),
             Title = responseMessage.Title,
-            Description = responseMessage.Text
+            Description = (responseMessage.Text.Length < 2048) ? responseMessage.Text : responseMessage.Text[..2048]
         };
         foreach (var (field, text) in responseMessage.Fields)
         {
