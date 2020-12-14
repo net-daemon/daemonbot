@@ -1,5 +1,5 @@
 #### Publish tags to docker hub
-name: Deploy dev builds to Docker Hub
+name: Deploy builds to Docker Hub
 on:
   push:
     branches:
