@@ -68,7 +68,7 @@ public class BotService : BackgroundService
     /// <summary>
     ///     Called each new message from Discord
     /// </summary>
-    private async Task OnMessageCreated(MessageCreateEventArgs e)
+    private async Task OnMessageCreated(DiscordClient client, MessageCreateEventArgs e)
     {
         if (_logger.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Trace))
         {
@@ -78,8 +78,10 @@ public class BotService : BackgroundService
         if (e.Message.Author.IsBot || IsThisMessageForTheBot(e) == false)
             return; // Ignore all botusers or messages not for the bot
 
+        // var members = await e.Guild.GetAllMembersAsync();
         // Get the member info and roles
-        var member = e.Guild.Members.Where(n => n.Id == e.Message.Author.Id).FirstOrDefault();
+        // var member = members.Where(n => n.Id == e.Message.Author.Id).FirstOrDefault();
+        DiscordMember member = (DiscordMember)e.Message.Author;
         var roles = member.Roles.Select(n => n.Name).ToList();
 
         var parser = new BotParser(

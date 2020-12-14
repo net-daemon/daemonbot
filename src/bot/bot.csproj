@@ -9,10 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Algolia.Search" Version="6.6.0" />
-    <PackageReference Include="DSharpPlus" Version="3.2.3" />
-    <PackageReference Include="Octokit" Version="0.47.0" />
-    <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
+    <PackageReference Include="Algolia.Search" Version="6.9.0" />
+    <PackageReference Include="DSharpPlus" Version="4.0.0-rc1" />
+    <PackageReference Include="Octokit" Version="0.48.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
   </ItemGroup>
 
 </Project>

@@ -13,3 +13,5 @@ The bot implements following features:
 | docs    | Displays link to docs                                |
 
 More commands will be implemented.
+
+## Create the bot docker
