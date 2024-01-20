@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿namespace netdaemonbot;
 
 public class BotResult
 {

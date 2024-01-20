@@ -1,7 +1,10 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using netdaemonbot;
+
+namespace netdaemonbot;
 
 public interface IBotPlugin
 {
@@ -62,6 +65,7 @@ public class BotParser : IMessage
 {
     /// <inheritdoc>
     public IEnumerable<string>? Roles { get; private set; }
+
     public bool IsOwner { get; private set; }
     public string User { get; }
     public string? Query { get; private set; }
@@ -75,8 +79,10 @@ public class BotParser : IMessage
     public string? CommandArgs { get; private set; }
 
     #region -- Parse expressions --
+
     static Regex _exCommand = new Regex(@"(<@!\d+>)*\s*(?'command'\w+)\s*(?'argument'.*)");
     static Regex _exQuery = new Regex(@"(<@!\d+>)*\s*(?'query'.+)\?");
+
     #endregion
 
     public BotParser(string message, bool botMentioned, IEnumerable<string>? roles, bool isOwner, string user)
@@ -99,6 +105,7 @@ public class BotParser : IMessage
                         Query = string.IsNullOrEmpty(group.Value) ? null : group.Value;
                 }
             }
+
             return;
         }
 

@@ -1,0 +1,47 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: netdaemonbot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: netdaemonbot
+  template:
+    metadata:
+      name: netdaemonbot
+      labels:
+        name: netdaemonbot
+    spec:
+      containers:
+        - name: netdaemonbot
+          image: 'helto4real/netdaemonbot'
+          env:
+            - name: TZ
+              value: "Europe/Stockholm"
+            - name: DISCORD_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: netdaemonbot
+                  key: discord-token
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: netdaemonbot
+                  key: github-token
+            - name: ALGOLIA_APPID
+              valueFrom:
+                secretKeyRef:
+                  name: netdaemonbot
+                  key: algolia-appid
+            - name: ALGOLIA_APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: netdaemonbot
+                  key: algolia-apikey
+            - name: DISCORD_BOTCHANNEL
+              valueFrom: 
+                secretKeyRef:
+                  name: netdaemonbot
+                  key: discord-botchannel
+      restartPolicy: Always

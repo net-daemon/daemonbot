@@ -1,11 +1,8 @@
+﻿
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Algolia.Search.Clients;
-using Microsoft.Extensions.Logging;
+using netdaemonbot;
 
 /// <summary>
 ///     Implements search capabilities using Algolia search API
@@ -41,8 +38,8 @@ public class AlgoliaPlugin : IBotPlugin
         string? indexName,
         ILoggerFactory loggerFactory,
         string searchCommand = "search",
-        string searchCommandHelp = "search or end with ?",
-        string searchDescriptionHelp = "Search the docs and return top 3 results",
+        string searchCommandHelp = "search",
+        string searchDescriptionHelp = "searches the docs and return top 3 results, you can also search by just typing your query followed by the `?` character",
         int order = 0)
     {
         _ = appId ?? throw new ArgumentNullException(nameof(appId));

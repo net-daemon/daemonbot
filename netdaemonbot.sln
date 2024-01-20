@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "netdaemonbot", "src\netdaemonbot.csproj", "{5C7F87ED-8EE9-49E6-9748-D128F236A234}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy", "Deploy", "{9223E56D-7080-4BE2-BE23-3DCD70E13D12}"
+	ProjectSection(SolutionItems) = preProject
+		Deployment\deploy.ps1 = Deployment\deploy.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "K8S", "K8S", "{FA03834D-16BF-4CC0-9DEC-7E95F2101228}"
+	ProjectSection(SolutionItems) = preProject
+		Deployment\K8S\deployment.yaml = Deployment\K8S\deployment.yaml
+		Deployment\K8S\secrets.yaml = Deployment\K8S\secrets.yaml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5C7F87ED-8EE9-49E6-9748-D128F236A234}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C7F87ED-8EE9-49E6-9748-D128F236A234}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C7F87ED-8EE9-49E6-9748-D128F236A234}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C7F87ED-8EE9-49E6-9748-D128F236A234}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FA03834D-16BF-4CC0-9DEC-7E95F2101228} = {9223E56D-7080-4BE2-BE23-3DCD70E13D12}
+	EndGlobalSection
+EndGlobal
