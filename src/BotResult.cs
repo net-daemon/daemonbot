@@ -19,6 +19,6 @@ public class BotResult
     /// <typeparam name="field">Field name</typeparam>
     /// <typeparam name="text">Text in field</typeparam>
     /// <returns></returns>
-    public List<(string field, string text)> Fields { get; set; } = new List<(string, string)>();
+    public List<(string field, string text)> Fields { get; set; } = [];
 
 }

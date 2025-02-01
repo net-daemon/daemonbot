@@ -16,7 +16,7 @@ public class GithubPlugin : IBotPlugin
     private readonly GitHubClient _client;
     private readonly int _order;
 
-    static Regex _exIssueParsing = new Regex(@"\s*(?'type'\w+)\s*(?'topic'.*)");
+    static readonly Regex _exIssueParsing = new(@"\s*(?'type'\w+)\s*(?'topic'.*)");
 
     // private readonly bool _isAuthenticated;
     public GithubPlugin(ILoggerFactory loggerFactory, int order, string? githubToken = null)
@@ -32,7 +32,6 @@ public class GithubPlugin : IBotPlugin
         if (string.IsNullOrEmpty(token) == false)
         {
             _client.Credentials = new Credentials(token);
-            // _isAuthenticated = true;
         }
     }
 
@@ -40,12 +39,12 @@ public class GithubPlugin : IBotPlugin
 
     public IEnumerable<(string, string?)>? GetCommandsAndDecriptions()
     {
-        return new List<(string, string?)>
-        {
+        return
+        [
             ("latest", "get latest release notes"),
             ("issues", "get latest (max 10) reported issues"),
             ("issue", "adds issues fast, enter command `issue` for additional options"),
-        };
+        ];
     }
 
     public async Task<BotResult?> HandleMessage(IMessage message)
@@ -67,7 +66,7 @@ public class GithubPlugin : IBotPlugin
                     return await AddIssueInRepo(message);
             }
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             _logger.LogError(e, "Failed to handle message");
         }
@@ -92,11 +91,11 @@ public class GithubPlugin : IBotPlugin
         }
 
         Match? match = _exIssueParsing.Matches(message.CommandArgs).FirstOrDefault();
-        if (match is object)
+        if (match is not null)
         {
             string? command = null, title = null;
 
-            foreach (Group? group in match.Groups)
+            foreach (Group? group in match.Groups.Cast<Group?>())
             {
                 if (group?.Name == "type")
                     command = string.IsNullOrEmpty(group.Value) ? null : group.Value.ToLowerInvariant();
@@ -109,18 +108,13 @@ public class GithubPlugin : IBotPlugin
                 return GetIssueMissingTitleHelpMessage();
             }
 
-            switch (command)
+            return command switch
             {
-                case "docs":
-                    return await AddDocsIssue(title, message.User);
-                case "feature":
-                    return await AddDaemonIssue("feature", title, message.User);
-                case "bug":
-                    return await AddDaemonIssue("bug", title, message.User);
-                default:
-                    return UnKnownIssueCommand();
-            }
-
+                "docs" => await AddDocsIssue(title, message.User),
+                "feature" => await AddDaemonIssue("feature", title, message.User),
+                "bug" => await AddDaemonIssue("bug", title, message.User),
+                _ => UnKnownIssueCommand(),
+            };
             ;
 
         }
@@ -145,7 +139,7 @@ public class GithubPlugin : IBotPlugin
             _ => null
         };
 
-        if (label is object)
+        if (label is not null)
             createIssue.Labels.Add(label);
 
         var body = type switch
@@ -155,7 +149,7 @@ public class GithubPlugin : IBotPlugin
             _ => null
         };
 
-        if (body is object)
+        if (body is not null)
             createIssue.Body = body;
 
         var issue = await _client.Issue.Create("net-daemon", "netdaemon", createIssue);
@@ -244,7 +238,7 @@ public class GithubPlugin : IBotPlugin
         if (releases.Count == 0)
             return null;
 
-        var release = releases.First();
+        var release = releases[0];
 
         var result = new BotResult() { Title = $"Latest release version {release.TagName}", Text = release.Body };
 
@@ -292,7 +286,7 @@ public class GithubPlugin : IBotPlugin
         return result;
     }
 
-    private string featureTemplate = @"
+    private readonly string featureTemplate = @"
 <!--
     Please describe the feature you want from a usage perspective.
 -->
@@ -312,7 +306,7 @@ public class GithubPlugin : IBotPlugin
 
 ";
 
-    private string docsTemplate = @"
+    private readonly string docsTemplate = @"
 <!--
     Please describe what suggestions or issues you have for the docs.
 -->
@@ -323,7 +317,7 @@ public class GithubPlugin : IBotPlugin
 
 ";
     
-    private string issueTemplate = @"
+    private readonly string issueTemplate = @"
 <!-- READ THIS FIRST:
   - If you need additional help with this template, please refer to https://netdaemon.xtz/help/reporting_issues/
   - Make sure you are running the latest version of NetDaemon before reporting an issue: https://github.com/net-daemon/netdaemon/releases
