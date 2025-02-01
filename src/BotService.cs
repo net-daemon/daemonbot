@@ -1,9 +1,6 @@
 ﻿using System.Reflection;
 using System.Text;
 using DSharpPlus;
-using DSharpPlus.Entities;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace netdaemonbot;
 

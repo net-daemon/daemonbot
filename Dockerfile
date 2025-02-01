@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 as builder
+FROM mcr.microsoft.com/dotnet/sdk:9.0 as builder
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 
@@ -6,7 +6,7 @@ ARG BUILDPLATFORM
 COPY ./src /usr/src
 RUN dotnet publish -c Release /usr/src/netdaemonbot.csproj -o "/publish"
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
 # RUN mkdir /app
 # Set the working directory to /app
 WORKDIR /app

@@ -5,24 +5,19 @@ using System.Threading.Tasks;
 /// <summary>
 ///     Process static text responses to commands
 /// </summary>
-public class StaticCommandsPlugin : IBotPlugin
+public class StaticCommandsPlugin(int order = 0) : IBotPlugin
 {
-    private readonly int _orderOfProcessingMessages;
-
-    public StaticCommandsPlugin(int order = 0)
-    {
-        _orderOfProcessingMessages = order;
-    }
+    private readonly int _orderOfProcessingMessages = order;
 
     public int Order => _orderOfProcessingMessages;
 
     public Task<BotResult?> HandleMessage(IMessage message)
     {
-        if (message.Command is object && _commandResponse.ContainsKey(message.Command))
+        if (message.Command is object && _commandResponse.TryGetValue(message.Command, out (string title, string text) value))
         {
-            var (title, text) = _commandResponse[message.Command];
+            var (title, text) = value;
 
-            if (title is object)
+            if (title is not null)
             {
                 return Task.FromResult<BotResult?>(
                                            new BotResult() { Title = title, Text = text });
@@ -34,10 +29,10 @@ public class StaticCommandsPlugin : IBotPlugin
 
     public IEnumerable<(string, string?)>? GetCommandsAndDecriptions()
     {
-        return new List<(string, string?)>
-        {
+        return
+        [
             ("docs", "show me the url to the docs")
-        };
+        ];
     }
 
     private static Dictionary<string, (string title, string text)> _commandResponse = new Dictionary<string, (string, string)>

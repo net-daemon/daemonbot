@@ -1,7 +1,6 @@
-﻿
-
-using System.Text;
+﻿using System.Text;
 using Algolia.Search.Clients;
+using Algolia.Search.Models.Search;
 using netdaemonbot;
 
 /// <summary>
@@ -18,11 +17,12 @@ public class AlgoliaPlugin : IBotPlugin
     private int _orderOfProcessingMessages = 0;
     private ILogger _logger;
     SearchClient _algoliaSearchClient;
-    SearchIndex _algoliaIndex;
+    /*SearchIndex _algoliaIndex;*/
     private readonly string _searchCommand;
     private readonly bool _isDefaultSearch;
     private readonly string _searchCommandHelp;
     private readonly string _searchDescriptionHelp;
+    private readonly string _indexName;
 
     /// <summary>
     ///     Constructor
@@ -44,7 +44,7 @@ public class AlgoliaPlugin : IBotPlugin
     {
         _ = appId ?? throw new ArgumentNullException(nameof(appId));
         _ = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
-        _ = indexName ?? throw new ArgumentNullException(nameof(apiKey));
+        _indexName = indexName ?? throw new ArgumentNullException(nameof(apiKey));
 
         _searchCommand = searchCommand;
         _isDefaultSearch = searchCommand == "search" ? true : false;
@@ -54,7 +54,8 @@ public class AlgoliaPlugin : IBotPlugin
 
         _logger = loggerFactory.CreateLogger<AlgoliaPlugin>();
         _algoliaSearchClient = new SearchClient(appId, apiKey);
-        _algoliaIndex = _algoliaSearchClient.InitIndex(indexName);
+        /*_algoliaIndex = _algoliaSearchClient.InitIndex(indexName);*/
+
         _orderOfProcessingMessages = order;
     }
 
@@ -126,43 +127,55 @@ public class AlgoliaPlugin : IBotPlugin
         var returnList = new List<(string, string)>();
         try
         {
-            var query = new Algolia.Search.Models.Search.Query(userQuery);
-            // query.
-            var result = await _algoliaIndex.SearchAsync<Hit>(query);
+            var query = new SearchQuery(
+                    new SearchForHits
+                    {
+                        IndexName = _indexName,
+                        Query = userQuery,
+                        HitsPerPage = 10,
+                    });
+            var result = await _algoliaSearchClient.SearchAsync<Hit>(
+                    new SearchMethodParams
+                    {
+                        Requests = [query]
+                    });
 
-            foreach (var hit in result.Hits)
+            foreach (var res in result.Results)
             {
-                if (hit.hierarchy is object && hit.url is object)
+                foreach (var hit in res.AsSearchResponse().Hits)
                 {
-                    bool isIndexedWrong = false;
-
-                    var caption = hit.anchor;
-                    for (int i = 5; i >= 0; i--)
+                    if (hit.hierarchy is not null && hit.url is not null)
                     {
-                        var lvl = $"lvl{i}";
-                        if (hit.hierarchy.ContainsKey(lvl) && hit.hierarchy[lvl] is object)
+                        bool isIndexedWrong = false;
+
+                        var caption = hit.anchor;
+                        for (int i = 5; i >= 0; i--)
                         {
-                            caption = hit.hierarchy[lvl];
+                            var lvl = $"lvl{i}";
+                            if (hit.hierarchy.TryGetValue(lvl, out string? value) && value is not null)
+                            {
+                                caption = value;
 
-                            if (caption.StartsWith("«") || caption.EndsWith("»"))
-                                isIndexedWrong = true; // It has indexed the arrow texts
+                                if (caption.StartsWith("«") || caption.EndsWith("»"))
+                                    isIndexedWrong = true; // It has indexed the arrow texts
 
-                            break;
+                                break;
+                            }
                         }
-                    }
 
-                    if (hit.url.EndsWith("#__docusaurus"))
-                    {
-                        hit.url = hit.url[..^14];
-                    }
+                        if (hit.url.EndsWith("#__docusaurus"))
+                        {
+                            hit.url = hit.url[..^14];
+                        }
 
-                    // Compensate for fauly indexed pages
-                    if (!isIndexedWrong)
-                        returnList.Add((caption!, hit.url));
+                        // Compensate for fauly indexed pages
+                        if (!isIndexedWrong)
+                            returnList.Add((caption!, hit.url));
+                    }
                 }
             }
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             _logger.LogError(e, "Ops, something went wrong in Algolia search!");
         }

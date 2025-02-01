@@ -1,8 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using netdaemonbot;
 
 namespace netdaemonbot;
 
@@ -80,8 +76,8 @@ public class BotParser : IMessage
 
     #region -- Parse expressions --
 
-    static Regex _exCommand = new Regex(@"(<@!\d+>)*\s*(?'command'\w+)\s*(?'argument'.*)");
-    static Regex _exQuery = new Regex(@"(<@!\d+>)*\s*(?'query'.+)\?");
+    static readonly Regex _exCommand = new(@"(<@!\d+>)*\s*(?'command'\w+)\s*(?'argument'.*)");
+    static readonly Regex _exQuery = new(@"(<@!\d+>)*\s*(?'query'.+)\?");
 
     #endregion
 
@@ -97,9 +93,9 @@ public class BotParser : IMessage
         {
             // Parse queries
             Match? matchQuery = _exQuery.Matches(message).FirstOrDefault();
-            if (matchQuery is object)
+            if (matchQuery is not null)
             {
-                foreach (Group? group in matchQuery.Groups)
+                foreach (Group? group in matchQuery.Groups.Cast<Group?>())
                 {
                     if (group?.Name == "query")
                         Query = string.IsNullOrEmpty(group.Value) ? null : group.Value;
@@ -110,9 +106,9 @@ public class BotParser : IMessage
         }
 
         Match? match = _exCommand.Matches(message).FirstOrDefault();
-        if (match is object)
+        if (match is not null)
         {
-            foreach (Group? group in match.Groups)
+            foreach (Group? group in match.Groups.Cast<Group?>())
             {
                 if (group?.Name == "command")
                     Command = string.IsNullOrEmpty(group.Value) ? null : group.Value.ToLowerInvariant();
